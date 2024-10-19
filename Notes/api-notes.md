@@ -18,4 +18,13 @@
 ## Practices
 - All the config values as needed for things such as DB connection are stored in `config/env.go`
     - This has a `Config` struct with an initial configuration applied where the values are either lifted from the environment or have default values as fallback
-- Such an approach is good practice in general    
+- Such an approach is good practice in general
+- Having only worked with `Mux`, I have to say that this is surprisingly verbose for Go. For example, having to do this for getting a JSON payload
+```
+var payload types.RegisterUserPayload
+err := json.NewDecoder(r.Body).Decode(payload) 
+```
+- This is essentially taking a payload of type `RegisterUserPayload` (which is a struct) and decodes into.
+    - `NewDecoder` takes in a `http.request` Body and returns a `Decoder` pointer
+- Usage of `Repository Design Pattern`: there is an intermediate layer between the business logic and data storage
+    - Provide standard way to access and manipulate data while abstracting away from the actual underlying data store tech.
