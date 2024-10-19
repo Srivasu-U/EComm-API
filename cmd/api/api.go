@@ -27,7 +27,8 @@ func (s *ApiServer) Run() error {
 	// In this call, all our endpoints have the v1 prefix, which is good practice in general
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
-	userHandler := user.NewHandler()
+	userStore := user.NewStore(s.db)
+	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRouters(subrouter)
 
 	log.Println("Listening on", s.addr)
