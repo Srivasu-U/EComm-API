@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Config defines the values necessary to connect to the database
 type Config struct {
 	PublicHost string
 	Port       string
@@ -17,6 +18,7 @@ type Config struct {
 	DBName     string
 }
 
+// Envs contains the initial configuration values for connecting to the database
 var Envs = initConfig()
 
 func initConfig() Config {
