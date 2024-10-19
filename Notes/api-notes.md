@@ -14,3 +14,8 @@
 - A server, for us, is a struct with an address and a DB pointer.
 - We also need a router for the endpoints registration
     - Routers provide a centralized way to check API handlers and start from there for any modifications
+
+## Practices
+- All the config values as needed for things such as DB connection are stored in `config/env.go`
+    - This has a `Config` struct with an initial configuration applied where the values are either lifted from the environment or have default values as fallback
+- Such an approach is good practice in general    
