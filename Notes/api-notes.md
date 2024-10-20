@@ -29,6 +29,33 @@ err := json.NewDecoder(r.Body).Decode(payload)
 - Usage of `Repository Design Pattern`: there is an intermediate layer between the business logic and data storage
     - Provide standard way to access and manipulate data while abstracting away from the actual underlying data store tech.
 
+## Migrations
+- These are the tables used
+
+![tablesUsed](/Notes/assets/tablesUsed.png)  
+
+- Database migrations is a way to maintain a history of changes to the database so that it can be reproduced anywhere just using the files
+    - Basically is a log of changes that can be executed
+    - Kind of akin to git
+- You can call `up` on the migrations to make the changes or you can call `down` on the migrations to revert the changes
+    - That is, we run `main.go` through the terminal and pass in either `up` or `down` as the args to run the relevant migration file
+    ```
+    go run cmd/migrate/main.go up  // Run migration up file
+    go run cmd/migrate/main.go down // Run migration down file
+    ```
+- To create new migration files, we can use the following command `make migration <migration-name>` which runs the relevant command from the `Makefile`
+- We can run either `make migrate-up` or `make migrate-down` to run the relevant migration up or down files
+- If there is an error in the migration which results in a dirty read, the following command can be run
+```
+migrate -path <PATH-TO-MIGRATIONS> -database "mysql://root:<password>@tcp(URL)/<db-name>" force <migration-number>
+```
+- `URL` is `localhost:3306` for me and `<db-name>` is `EComm`
+- To get the `migration-number`, I just run `make migrate-up` which gives me an error message with the number in it *shrug*
+- Also, if push comes to shove, just copy the entire up and down migration files, delete the entire DB from MySQL and start anew. 
+- The tables must be created in the order of their dependencies. 
+    - For example, in this project, the `order_items` table is dependent on both `orders` and `products` table existing as it uses the ids as foreign keys
+    - This essentially means that the migrations for `orders` and `products` must be before `order_items`
+
 ## Questions
 - *Why have a storage layer?*
 - *How do you quantify what is a service and what isn't?*
