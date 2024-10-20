@@ -37,11 +37,34 @@ func (s *Store) GetUserByEmail(email string) (*types.User, error) {
 }
 
 func (s *Store) GetUserByID(id int) (*types.User, error) {
-	return nil, nil // Placeholder
+	rows, err := s.db.Query("SELECT * FROM users WHERE id = ?", id) // Returns pointers to rows
+	if err != nil {
+		return nil, err
+	}
+
+	u := new(types.User)
+	for rows.Next() { // Iterate through rows
+		u, err = scanRowIntoUser(rows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if u.ID == 0 {
+		return nil, fmt.Errorf("User not found")
+	}
+
+	return u, nil
 }
 
 func (s *Store) CreateUser(user types.User) error {
-	return nil // Placeholder
+	_, err := s.db.Exec("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)",
+		user.FirstName, user.LastName, user.Email, user.Password)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func scanRowIntoUser(rows *sql.Rows) (*types.User, error) {
