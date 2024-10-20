@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type mockUserStore struct{} // Used only for testing
+type mockUserStore struct{} // Used only for testing, so that we can control the behaviour of the methods
 
 func (m *mockUserStore) GetUserByEmail(email string) (*types.User, error) {
 	return nil, fmt.Errorf("user not found")

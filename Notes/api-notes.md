@@ -28,3 +28,8 @@ err := json.NewDecoder(r.Body).Decode(payload)
     - `NewDecoder` takes in a `http.request` Body and returns a `Decoder` pointer
 - Usage of `Repository Design Pattern`: there is an intermediate layer between the business logic and data storage
     - Provide standard way to access and manipulate data while abstracting away from the actual underlying data store tech.
+
+## Questions
+- *Why have a storage layer?*
+- *How do you quantify what is a service and what isn't?*
+    - *What are the design principles that go into this?*
