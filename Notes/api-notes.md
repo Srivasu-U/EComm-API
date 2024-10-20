@@ -28,6 +28,47 @@ err := json.NewDecoder(r.Body).Decode(payload)
     - `NewDecoder` takes in a `http.request` Body and returns a `Decoder` pointer
 - Usage of `Repository Design Pattern`: there is an intermediate layer between the business logic and data storage
     - Provide standard way to access and manipulate data while abstracting away from the actual underlying data store tech.
+- When I ran `make run`, everything seemed to run successfully but as soon as I sent a request to `/register` on Thunder Client, I got a huge panic, like this
+```
+2024/10/20 19:23:25 DB Ping successful
+2024/10/20 19:23:25 Listening on :8080
+2024/10/20 19:30:05 http: panic serving 127.0.0.1:50218: runtime error: invalid memory address or nil pointer dereference
+goroutine 17 [running]:
+net/http.(*conn).serve.func1()
+        /usr/local/go/src/net/http/server.go:1947 +0xbe
+panic({0x771b20?, 0xac1600?})
+        /usr/local/go/src/runtime/panic.go:785 +0x132
+database/sql.(*DB).conn(0x0, {0x874be0, 0xaf53a0}, 0x1)
+        /usr/local/go/src/database/sql/sql.go:1309 +0x54
+database/sql.(*DB).query(0x0, {0x874be0, 0xaf53a0}, {0x7e4d48, 0x23}, {0xc0001718b0, 0x1, 0x1}, 0x40?)
+        /usr/local/go/src/database/sql/sql.go:1751 +0x57
+database/sql.(*DB).QueryContext.func1(0x20?)
+        /usr/local/go/src/database/sql/sql.go:1734 +0x4f
+database/sql.(*DB).retry(0x10?, 0xc0001717f0)
+        /usr/local/go/src/database/sql/sql.go:1568 +0x42
+database/sql.(*DB).QueryContext(0xc0000a6590?, {0x874be0?, 0xaf53a0?}, {0x7e4d48?, 0xc0000ce240?}, {0xc0001718b0?, 0x7a2820?, 0xc0000ce240?})
+        /usr/local/go/src/database/sql/sql.go:1733 +0xc5
+database/sql.(*DB).Query(...)
+        /usr/local/go/src/database/sql/sql.go:1747
+github.com/Srivasu-U/EComm-API/service/user.(*Store).GetUserByEmail(0xc000164af0?, {0xc0000a6590?, 0xaf53a0?})
+        /home/chiltu/Go-Proj/EComm-API/service/user/store.go:19 +0x76
+github.com/Srivasu-U/EComm-API/service/user.(*Handler).handleRegister(0xc0000aa060, {0x874708, 0xc0000f8000}, 0xc0000c4640)
+        /home/chiltu/Go-Proj/EComm-API/service/user/routes.go:48 +0x17b
+net/http.HandlerFunc.ServeHTTP(0xc0000c4500?, {0x874708?, 0xc0000f8000?}, 0x10?)
+        /usr/local/go/src/net/http/server.go:2220 +0x29
+github.com/gorilla/mux.(*Router).ServeHTTP(0xc0000c0000, {0x874708, 0xc0000f8000}, 0xc0000c43c0)
+        /home/chiltu/go/pkg/mod/github.com/gorilla/mux@v1.8.1/mux.go:212 +0x1e2
+net/http.serverHandler.ServeHTTP({0x873430?}, {0x874708?, 0xc0000f8000?}, 0x6?)
+        /usr/local/go/src/net/http/server.go:3210 +0x8e
+net/http.(*conn).serve(0xc0000e8000, {0x874c88, 0xc0000a8540})
+        /usr/local/go/src/net/http/server.go:2092 +0x5d0
+created by net/http.(*Server).Serve in goroutine 1
+        /usr/local/go/src/net/http/server.go:3360 +0x485
+```
+- I'm still on certain on how to "correctly" debug this, but the way I did it was following the stack trace, bottom-up, and checking the function calls
+    - The culprit was `s.db.Query(...)` within the `store.go`. 
+    - `s.db` was nil *facepalm* as it was in `cmd/main.go` => `server := api.NewApiServer(":8080", nil)` instead of `server := api.NewApiServer(":8080", db)`
+    - So `Query()` was being called on a nil object. My bad but I am glad I was able to figure this out
 
 ## Migrations
 - These are the tables used
