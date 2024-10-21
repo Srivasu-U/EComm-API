@@ -23,10 +23,24 @@ type User struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+type Product struct {
+	ID          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Image       string    `json:"image"`
+	Price       float64   `json:"price"`
+	Quantity    int       `json:"quantity"`
+	CreatedAt   time.Time `json:"createdAt"`
+}
+
 type UserStore interface {
 	// The Store struct from store.go basically implements this interface, ie, Store struct can wrap up into UserStore interface.
 	// This will help in testing
 	GetUserByEmail(email string) (*User, error)
 	GetUserByID(id int) (*User, error)
 	CreateUser(User) error
+}
+
+type ProductStore interface {
+	GetProducts() ([]Product, error)
 }
