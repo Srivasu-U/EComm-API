@@ -101,3 +101,6 @@ migrate -path <PATH-TO-MIGRATIONS> -database "mysql://root:<password>@tcp(URL)/<
 - *Why have a storage layer?*
 - *How do you quantify what is a service and what isn't?*
     - *What are the design principles that go into this?*
+
+## TODO
+- TODO: Dockerize this application
