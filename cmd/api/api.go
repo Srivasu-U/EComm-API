@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Srivasu-U/EComm-API/service/product"
 	"github.com/Srivasu-U/EComm-API/service/user"
 	"github.com/gorilla/mux"
 )
@@ -30,6 +31,10 @@ func (s *ApiServer) Run() error {
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRouters(subrouter)
+
+	productStore := product.NewStore(s.db)
+	productHandler := product.NewHandler(productStore)
+	productHandler.RegisterRouters(subrouter)
 
 	log.Println("Listening on", s.addr)
 
